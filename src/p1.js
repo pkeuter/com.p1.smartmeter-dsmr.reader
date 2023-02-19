@@ -143,7 +143,7 @@ function publishToHomey (output) {
     }
 
     for (const homeyHost of homeyHosts) {
-	    console.log(JSON.stringify(data, undefined, 2));
+	    //console.log(JSON.stringify(data, undefined, 2));
         fetch(homeyHost + homeyEndpoint, {
             method: 'post',
             body: JSON.stringify(data),
