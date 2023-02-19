@@ -14,12 +14,12 @@ logger.add(new logger.transports.Console({
  * 5: Refresh the page (you see couple of webpages being called)
  * 6: Copy the `homeyId` from the url: https://[localId].homey.homeylocal.com/api/manager/system/ping?id=[homeyId]
  */
-const homeyId = '5c....................23'
+const homeyId = '5.....................'
 
 const usbPort = '/dev/ttyUSB0'
-const bps = 115200
-const bits = 8
-const parity = 'none'
+const bps = 9600
+const bits = 7
+const parity = 'even'
 
 const homeyEndpoint = '/api/app/com.p1/update'
 const homeyHosts = [
@@ -27,6 +27,7 @@ const homeyHosts = [
 ]
 
 function publishToHomey (output) {
+//	console.log(output);
     const data = {
         'meterType': output.meterModel,
         'version': output.dsmrVersion,
@@ -93,29 +94,29 @@ function publishToHomey (output) {
         'power': {
           'positive': {
             'L1': {
-              'reading': output.power.instantaneousConsumedElectricityL1,
+              'reading': output.power.instantaneousConsumedElectricityL1 || output.power.actualConsumed || 0,
               'unit': 'kW',
             },
             'L2': {
-              'reading': output.power.instantaneousConsumedElectricityL2,
+              'reading': output.power.instantaneousConsumedElectricityL2 || 0,
               'unit': 'kW',
             },
             'L3': {
-              'reading': output.power.instantaneousConsumedElectricityL3,
+              'reading': output.power.instantaneousConsumedElectricityL3 || 0,
               'unit': 'kW',
             },
           },
           'negative': {
             'L1': {
-              'reading': output.power.instantaneousProducedElectricityL1,
+              'reading': output.power.instantaneousProducedElectricityL1 || output.power.actualProduced || 0,
               'unit': 'kW',
             },
             'L2': {
-              'reading': output.power.instantaneousProducedElectricityL2,
+              'reading': output.power.instantaneousProducedElectricityL2 || 0,
               'unit': 'kW',
             },
             'L3': {
-              'reading': output.power.instantaneousProducedElectricityL3,
+              'reading': output.power.instantaneousProducedElectricityL3 || 0,
               'unit': 'kW',
             },
           },
@@ -142,6 +143,7 @@ function publishToHomey (output) {
     }
 
     for (const homeyHost of homeyHosts) {
+	    console.log(JSON.stringify(data, undefined, 2));
         fetch(homeyHost + homeyEndpoint, {
             method: 'post',
             body: JSON.stringify(data),
